@@ -1,18 +1,17 @@
 import socket
 import threading
 
-HOST = ""
 PORT = 50007
 
 
 def echo(conn: socket.socket, addr: socket._RetAddress) -> None:
     with conn:
         print("New connection:", addr)
-        data = conn.recv(2048)
-        if not data:
-            raise RuntimeError("Broken Connection")
-        conn.sendall(data)
-        conn.close()
+        while True:
+            data = conn.recv(2048)
+            if not data:
+                raise RuntimeError("Broken Connection")
+            conn.sendall(data)
 
 
 def make_client_thread(
@@ -24,7 +23,7 @@ def make_client_thread(
 
 def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((HOST, PORT))
+        s.bind((socket.gethostname(), PORT))
         s.listen(5)
         print("Listening on port", PORT)
         while True:
